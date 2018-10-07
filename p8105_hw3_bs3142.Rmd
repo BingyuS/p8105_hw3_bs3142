@@ -7,5 +7,45 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+## Problem 1
+
+#### Section 1: Data import
+
+```{r import brfss data}
+library(p8105.datasets)
+data(brfss_smart2010)
+```
+
+#### Section 2: Data Manipulation
+
+```{r}
+brfss_data =
+  brfss_smart2010 %>%
+  janitor::clean_names() %>%
+  filter(topic == "Overall Health") %>%
+  select(-(class:question), -sample_size, -(confidence_limit_low:geo_location)) %>%
+  mutate(response = factor(response))
+
+str(brfss_data)
+```
+
+#### Section 3: Q & A
+
+**1. In 2002, which states were observed at 7 locations?**
+
+```{r}
+
 ```
 
