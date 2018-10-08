@@ -94,7 +94,7 @@ brfss_data %>%
 ```{r}
 brfss_data %>%
   group_by(year, locationabbr, response) %>%
-  summarize(mean_prop_response = mean(response, na.rm = TRUE))
+  summarize(mean_prop_response = mean(data_value))
 ```
 ????????
 
@@ -140,6 +140,6 @@ instacart %>%
 **3. Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
 
 ```{r}
-
+instacart 
 ```
 
