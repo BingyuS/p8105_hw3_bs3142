@@ -133,6 +133,13 @@ Which aisles are the most items ordered from?????
 
 ```{r}
 instacart %>%
-  select(aisle, add_to_cart_order)
+  distinct(aisle, add_to_cart_order)
+```
+?????????
+
+**3. Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
+
+```{r}
+
 ```
 
