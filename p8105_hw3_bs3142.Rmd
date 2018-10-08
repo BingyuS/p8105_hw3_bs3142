@@ -121,9 +121,18 @@ data(instacart)
 
 ```{r}
 instacart %>%
-  group_by(aisle) %>%
   summarize(
-    n_aisle = n(),
-    n_obs = n_distinct(aisle))
+    n_aisle = n_distinct(aisle),
+    max_items = max(add_to_cart_order))
+```
+
+There are **134** aisles. **nuts seeds dried fruit** and **packaged vegetables fruits**
+Which aisles are the most items ordered from?????
+
+**2. Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.**
+
+```{r}
+instacart %>%
+  select(aisle, add_to_cart_order)
 ```
 
