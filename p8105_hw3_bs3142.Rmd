@@ -140,6 +140,10 @@ instacart %>%
 **3. Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
 
 ```{r}
-instacart 
+instacart %>%
+  select(aisle, add_to_cart_order, product_name) %>%
+  filter(aisle == c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
+  group_by(aisle, product_name) %>%
+  summarize(most_popular_item = max(add_to_cart_order))
 ```
 
