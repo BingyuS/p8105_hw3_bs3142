@@ -157,8 +157,8 @@ There are **134** aisles. The items **nuts seeds dried fruit** and **packaged ve
 ```{r}
 instacart %>%
   group_by(department, aisle) %>%
-  summarize(number_items = sum(add_to_cart_order)) %>%
-  ggplot(aes(x = aisle, y = number_items, color = department)) + 
+  count(aisle) %>%
+  ggplot(aes(x = aisle, y = n, color = department)) + 
     geom_point() +
     labs(
       title = "Number of items ordered in each aisle",
@@ -174,14 +174,15 @@ instacart %>%
 ```
 ?????????
 
-**3. Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
+**3. Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
 
 ```{r}
 instacart %>%
-  select(aisle, add_to_cart_order, product_name) %>%
-  filter(aisle == c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
-  group_by(aisle, product_name) %>%
-  summarize(most_popular_item = max(add_to_cart_order))
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  group_by(aisle) %>%
+  count(product_name) %>%
+  filter(n == max(n)) %>% #get only rows with the most popular item in each of the aisles
+  knitr::kable(digits = 1)
 ```
 ????????????
 
