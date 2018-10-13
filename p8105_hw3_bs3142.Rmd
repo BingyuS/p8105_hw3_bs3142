@@ -190,11 +190,15 @@ instacart %>%
 ```{r}
 instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
-  select(product_name, order_hour_of_day, days_since_prior_order) %>% 
-  group_by(product_name) %>%
-  summarize(mean_hour_of_day = mean(order_hour_of_day))
+  select(product_name, order_hour_of_day, order_dow) %>% 
+  group_by(product_name, order_dow) %>%
+  summarize(mean_order_hour_of_day = mean(order_hour_of_day)) %>%
+  mutate(order_dow = c(1, 2, 3, 4, 5, 6, 7)) %>%
+  mutate(order_dow = lubridate::wday(order_dow, label = TRUE)) %>% #convert number to week days
+  spread(key = order_dow, value = mean_order_hour_of_day) %>%
+  knitr::kable(digits = 1)
 ```
-??? how to add week???
+
 
 ## Problem 3
 
@@ -206,6 +210,10 @@ data(ny_noaa)
 
 #### Section 2: Data exploration
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. 
+
+```{r}
+
+```
 
 #### Section 3: Q & A
 
