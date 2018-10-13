@@ -127,7 +127,7 @@ data(instacart)
 ```
 
 #### Section 2: Data exploration
-
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 ```{r}
 
 ```
@@ -142,18 +142,35 @@ data(instacart)
 ```{r}
 instacart %>%
   summarize(
-    n_aisle = n_distinct(aisle),
+    n_aisle = n_distinct(aisle_id),
     max_items = max(add_to_cart_order))
+
+instacart %>%
+  select(aisle, add_to_cart_order) %>%
+  filter(add_to_cart_order == 80)
 ```
 
-There are **134** aisles. **nuts seeds dried fruit** and **packaged vegetables fruits**
-Which aisles are the most items ordered from?????
+There are **134** aisles. The items **nuts seeds dried fruit** and **packaged vegetables fruits** are ordered the most.
 
 **2. Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.**
 
 ```{r}
 instacart %>%
-  distinct(aisle, add_to_cart_order)
+  group_by(department, aisle) %>%
+  summarize(number_items = sum(add_to_cart_order)) %>%
+  ggplot(aes(x = aisle, y = number_items, color = department)) + 
+    geom_point() +
+    labs(
+      title = "Number of items ordered in each aisle",
+      x = "Aisle",
+      y = "Number of items ordered",
+      caption = "Data from instacart"
+  ) +
+  viridis::scale_color_viridis(
+    name = "Aisle", 
+    discrete = TRUE
+  )
+  
 ```
 ?????????
 
