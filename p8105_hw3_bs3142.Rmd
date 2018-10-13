@@ -220,8 +220,20 @@ The goal is to do some exploration of this dataset. To that end, write a short d
 **1. Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?**
 
 ```{r}
+tidy_noaa = 
+  ny_noaa %>%
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% #add year, month, and day
+  mutate(prcp = prcp/10, 
+         tmax = as.numeric(tmax)/10,
+         tmin = as.numeric(tmin)/10)
 
+tidy_noaa %>%
+  filter(!is.na(snow)) %>%
+  count(snow) %>%
+  filter(min_rank(desc(n)) < 4) #get the most commonly observed value
 ```
+
+For snowfall, the most commonly observed value was **0mm**, meaning snow days are less frequent compared to non-snow days. For days that did snow, the most commonly observed value was **25mm**, followed by 13mm as the second most frequent value.
 
 **2. Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
