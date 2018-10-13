@@ -238,7 +238,24 @@ For snowfall, the most commonly observed value was **0mm**, meaning snow days ar
 **2. Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
 ```{r}
-
+tidy_noaa %>%
+  select(-(day:snwd), -tmin) %>%
+  filter(month %in% c("01", "07") & !is.na(tmax)) %>%
+  group_by(id, year, month) %>%
+  summarize(mean_tmax = mean(tmax)) %>%
+  ggplot(aes(x = id, y = mean_tmax, color = year)) + 
+    geom_point() +
+    facet_grid(~month) +
+    labs(
+      title = "Number of observations in each state 2002-2010",
+      x = "Year",
+      y = "Number of observations",
+      caption = "Data from brfss_smart2010"
+  ) +
+  viridis::scale_color_viridis(
+    name = "State", 
+    discrete = TRUE
+  )
 ```
 
 **3. Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
