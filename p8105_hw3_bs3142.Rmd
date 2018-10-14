@@ -10,12 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
-)
-
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
 
@@ -62,14 +56,14 @@ brfss_data %>%
 
 **2. Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.**
 
-```{r}
+```{r, fig.height = 8, dpi = 300}
 brfss_data %>%
   group_by(year, locationabbr) %>%
   summarize(n_obs = n_distinct(locationdesc)) %>%
   ggplot(aes(x = year, y = n_obs, color = locationabbr)) + 
     geom_line() +
     labs(
-      title = "Number of locations in each state 2002-2010",
+      title = "Number of Locations in Each State 2002-2010",
       x = "Year",
       y = "Number of Observations",
       caption = "Data from brfss_smart2010"
