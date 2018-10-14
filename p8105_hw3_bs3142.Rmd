@@ -18,8 +18,8 @@ theme_set(theme_bw() + theme(legend.position = "bottom"))
 #### Section 1: Data import
 
 ```{r import brfss data}
-library(p8105.datasets)
-data(brfss_smart2010)
+library(p8105.datasets) #load library
+data(brfss_smart2010) #import brfss data
 ```
 
 #### Section 2: Data Manipulation
@@ -33,11 +33,11 @@ Data Cleaning:
 ```{r}
 brfss_data =
   brfss_smart2010 %>%
-  janitor::clean_names() %>%
+  janitor::clean_names() %>% #clean names
   filter(topic == "Overall Health") %>% # focus on "Overall Health" topic
   mutate(response = factor(response, levels = c("Excellent", "Very good", "Good", "Fair", "Poor"))) # convert responses to factor vector with specified orders
 
-str(brfss_data)
+str(brfss_data) #view variables
 ```
 
 #### Section 3: Q & A
@@ -46,10 +46,10 @@ str(brfss_data)
 
 ```{r}
 brfss_data %>%
-  filter(year == 2002) %>%
-  group_by(locationabbr) %>%
-  summarize(n_obs = n_distinct(locationdesc)) %>%
-  filter(n_obs == 7)
+  filter(year == 2002) %>% #retain data for 2002
+  group_by(locationabbr) %>% #summarize based on locationabbr
+  summarize(n_obs = n_distinct(locationdesc)) %>% #get total number of locations observed per state
+  filter(n_obs == 7) #get states observed at 7 locations
 ```
 
 **CT, FL, NC** were observed at 7 locations.
@@ -58,7 +58,7 @@ brfss_data %>%
 
 ```{r, fig.height = 8, dpi = 300}
 brfss_data %>%
-  group_by(year, locationabbr) %>%
+  group_by(year, locationabbr) %>% #summarize by year and locationabbr
   summarize(n_obs = n_distinct(locationdesc)) %>% #count number of locations in each state
   ggplot(aes(x = year, y = n_obs, color = locationabbr)) + 
     geom_line() +
@@ -78,14 +78,14 @@ brfss_data %>%
 
 ```{r}
 brfss_data %>%
-  filter(year %in% c("2002", "2006", "2010"), response == "Excellent", locationabbr == "NY") %>%
+  filter(year %in% c("2002", "2006", "2010"), response == "Excellent", locationabbr == "NY") %>% #get NY response for "Excellent" in 2002, 2006, and 2010
   spread(key = response, value = data_value) %>%
-  group_by(year) %>%
+  group_by(year) %>% #summarize by years
   summarize(
     mean_prop_excellent_NY = mean(Excellent, na.rm = TRUE),
     sd_prop_excellent_NY = sd(Excellent, na.rm = TRUE)
-  ) %>%
-  knitr::kable(digits = 1)
+  ) %>% #get mean and sd
+  knitr::kable(digits = 1) #show mean and sd in table
 ```
 
 
@@ -97,7 +97,7 @@ brfss_data %>%
   summarize(mean_prop_response = mean(data_value)) %>% #get average proportion in each response per state per year
   ggplot(aes(x = year, y = mean_prop_response, color = locationabbr)) + 
     geom_point() +
-    facet_grid(~response) +
+    facet_grid(~response) + #make panels by response
     labs(
       title = "Mean proportion by response in each state 2002-2010",
       x = "Year",
@@ -107,7 +107,7 @@ brfss_data %>%
   viridis::scale_color_viridis(
     name = "State", 
     discrete = TRUE
-  )
+  ) #plot scatterplot showing mean proportion by response
 ```
 
 
@@ -116,7 +116,7 @@ brfss_data %>%
 #### Section 1: Data import
 
 ```{r}
-data(instacart)
+data(instacart) #load instacart data
 ```
 
 #### Section 2: Data exploration
