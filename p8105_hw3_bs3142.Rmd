@@ -122,8 +122,8 @@ data(instacart) #load instacart data
 #### Section 2: Data exploration
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 ```{r}
-names(instacart)
-head(instacart)
+names(instacart) #look at variables
+head(instacart) #look at first 6 rows
 
 instacart %>%
   mutate(order_id = as.character(order_id),
@@ -141,7 +141,7 @@ instacart %>%
          department_id = as.character(department_id),
          aisle = as.character(aisle),
          department = as.character(department)) %>%
-  skimr::skim()
+  skimr::skim() #get data summary
 ```
 
 **Summary**
@@ -160,33 +160,31 @@ instacart %>%
 ```{r}
 instacart %>%
   summarize(
-    n_aisle = n_distinct(aisle_id),
-    max_items = max(add_to_cart_order))
-
+    n_aisle = n_distinct(aisle_id)) #get number of aisles
+  
 instacart %>%
-  select(aisle, add_to_cart_order) %>%
-  filter(add_to_cart_order == 80)
+  count(aisle) %>%
+  arrange(desc(n)) #Check the aisle with the the most items ordered from
 ```
 
-There are **134** aisles. The items **nuts seeds dried fruit** and **packaged vegetables fruits** are ordered the most.
+There are **134** aisles, the aisle of **Fresh Vegetables** gets the most items ordered.
 
 **2. Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.**
 
 ```{r}
 instacart %>%
-  group_by(department, aisle) %>%
+  group_by(aisle) %>%
   count(aisle) %>%
-  ggplot(aes(x = aisle, y = n, color = department)) + 
+  ggplot(aes(x = aisle, y = n, color = n)) + 
     geom_point() +
     labs(
       title = "Number of items ordered in each aisle",
       x = "Aisle",
-      y = "Number of items ordered",
+      y = "Number of items ordered per aisle",
       caption = "Data from instacart"
   ) +
   viridis::scale_color_viridis(
-    name = "Aisle", 
-    discrete = TRUE
+    name = "Number of items ordered per aisle"
   )
   
 ```
