@@ -10,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(patchwork)
-library(ggridges)
 library(p8105.datasets) #load datasets library
 
 theme_set(theme_bw() + theme(legend.position = "bottom"))
@@ -261,14 +260,14 @@ Coffee ice creams are ordered around afternoon everyday, and pink lady apples ar
 
 #### Section 1: Data import
 
-```{r}
-data(ny_noaa)
+```{r, q3_data_import}
+data(ny_noaa) #get ny_noaa data
 ```
 
 #### Section 2: Data exploration
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. 
 
-```{r}
+```{r, q3_data_exploration}
 names(ny_noaa) #look at variables
 head(ny_noaa) #look at first 6 rows
 skimr::skim(ny_noaa) #get data summary
@@ -277,14 +276,14 @@ skimr::skim(ny_noaa) #get data summary
 **Summary**
 
 * The dataset contains **7** variables with **2595176** rows.
-* Precipitation, snowfull, snow depth, maximum and minimun temperatures are recorded by a total of **747** participating weather stations from 1981 to 2010. 
-* All five measurements contain a large portion of missing values.
+* Precipitation, snowfall, snow depth, maximum and minimun temperatures are recorded by a total of **747** participating weather stations from 1981 to 2010. 
+* All five measurements contain a large portion of missing values, especially for temperature recording, which pose probelms if comparing temperature to other variables.
 
 #### Section 3: Q & A
 
 **1. Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?**
 
-```{r}
+```{r, q3_data_tidying}
 tidy_noaa = 
   ny_noaa %>%
   separate(date, into = c("year", "month", "day"), sep = "-") %>% #add year, month, and day
@@ -298,11 +297,13 @@ tidy_noaa %>%
   filter(min_rank(desc(n)) < 4) #get some of the commonly observed values
 ```
 
-For snowfall, the most commonly observed value was **0mm**, meaning snow days were less frequent compared to non-snow days. For days that did snow, the most commonly observed value was **25mm**, followed by 13mm as the second most frequent value.
+Comment:
+
+For snowfall, the most commonly observed value was **0mm**, meaning snow probably occur only in Winter, consistent with NY climate. For days that did snow, the most commonly observed value was **25mm**, followed by 13mm as the second most frequent value.
 
 **2. Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
-```{r}
+```{r, q3_boxplot, fig.height = 9, dpi = 300}
 tidy_noaa %>%
   select(-(day:snwd), -tmin) %>%
   filter(month %in% c("01", "07") & !is.na(tmax)) %>% #get Jan and July data, and remove any missing value for tmax
@@ -310,21 +311,24 @@ tidy_noaa %>%
   summarize(mean_tmax = mean(tmax)) %>%
   ggplot(aes(x = year, y = mean_tmax)) + 
     geom_boxplot() +
-    facet_grid(~month) + #create two-panel plots
+    facet_grid(~month) + #create two-panel plots by month
+    theme(axis.text.x = element_text(face = "plain", color = "black", 
+                           size = 5, angle = 90), legend.position = "none") +
     labs(
-      title = "Average Max Temperature In Each Station Across Years (January VS. July)",
+      title = "Average Max Temperature In Each Station from 1981 to 2010 (January VS. July)",
       x = "year",
       y = "Mean Max Temperature (ºC)",
       caption = "Data from ny_noaa"
-  ) +
-  viridis::scale_color_viridis(
-    discrete = TRUE
-  )
+  ) #get boxplot
 ```
+
+Comment:
+
+The mean maximum temperatures in January and July across years were centered around 0ºC and 25ºC respectively. Most of the outliers for January were at the higher end of the plot, showing there were some abnormally high temperature in January. In contrast, most of the outliers in July lied at the lower end, suggesting extreme cases were abnormally low temperature. 
 
 **3. Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
-```{r, fig.height = 12, dpi = 300}
+```{r, q3_two-panel_plot, fig.height = 12, dpi = 300}
 plot_tmax_tmin = 
   tidy_noaa %>%
   filter(!is.na(tmax) & !is.na(tmin)) %>%
@@ -332,8 +336,8 @@ plot_tmax_tmin =
   geom_hex() +
     labs(
       title = "tmax vs. tmin",
-      x = "tmin (ºC)",
-      y = "tmax (ºC)",
+      x = "Minimum temperature (ºC)",
+      y = "Maximum temperature (ºC)",
       caption = "Data from ny_noaa"
   ) +
   viridis::scale_color_viridis(
@@ -348,7 +352,7 @@ plot_snow =
   geom_violin() +
   stat_summary(fun.y = median, geom = "point", color = "blue", size = 2)
     labs(
-      title = "The Distribution of Snowfall Values between 0mm and 100mm by Year",
+      title = "The Distribution of Snowfall Values from 0mm and 100mm by Year",
       x = "Year",
       y = "Snowfall (mm)",
       caption = "Data from ny_noaa"
@@ -357,3 +361,6 @@ plot_snow =
 plot_tmax_tmin / plot_snow
 ```
 
+Comment:
+
+Most of the paired maximum and minimum temperatures resides in the center, meaning most of the days in New York are above 0ºC to below 30ºC. For snowfall distributions, there is a consistent pattern of snow across years.
