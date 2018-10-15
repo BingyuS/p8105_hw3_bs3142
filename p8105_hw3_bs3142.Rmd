@@ -115,17 +115,42 @@ brfss_data %>%
 
 #### Section 1: Data import
 
-```{r}
+```{r, import instacart data}
 data(instacart) #load instacart data
 ```
 
 #### Section 2: Data exploration
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 ```{r}
+names(instacart)
+head(instacart)
 
+instacart %>%
+  mutate(order_id = as.character(order_id),
+         product_id = as.character(product_id),
+         add_to_cart_order = as.integer(add_to_cart_order),
+         reordered = as.integer(reordered),
+         user_id = as.character(user_id),
+         eval_set = as.character(eval_set),
+         order_number = as.integer(order_number),
+         order_dow = as.integer(order_dow),
+         order_hour_of_day = as.integer(order_hour_of_day),
+         days_since_prior_order = as.integer(days_since_prior_order),
+         product_name = as.character(product_name),
+         aisle_id = as.character(aisle_id),
+         department_id = as.character(department_id),
+         aisle = as.character(aisle),
+         department = as.character(department)) %>%
+  skimr::skim()
 ```
 
 **Summary**
+
+* The data consists of **15** variables with **1384617** rows.
+* There is **no** missing value in the dataset.
+* The data contains **21** departments and **134** aisles, with a total number of **39123** different products. There are **131209** customers ordered from instacart. 
+* Each user is identified by a unique user id. Items added to cart by users are ordered chronologically, with corresponding product name, aisle, and their belonging department. Information for days since last order by each customers, the day of the week, and the hour of the day on which order was placed are recorded.
+* For example, customer with id "1" ordered 8 items such as yogurt, cheese, banana at 10am on Thursday.
 
 
 #### Section 3: Q & A
@@ -186,8 +211,11 @@ instacart %>%
   select(product_name, order_hour_of_day, order_dow) %>% 
   group_by(product_name, order_dow) %>%
   summarize(mean_order_hour_of_day = mean(order_hour_of_day)) %>%
-  mutate(order_dow = c(1, 2, 3, 4, 5, 6, 7)) %>%
-  mutate(order_dow = lubridate::wday(order_dow, label = TRUE)) %>% #convert number to week days
+  mutate(order_dow = c(1, 2, 3, 4, 5, 6, 7),
+         order_dow = lubridate::wday(order_dow, label = TRUE),
+         mean_order_hour_of_day = paste(floor(mean_order_hour_of_day),
+                                        round((mean_order_hour_of_day - floor(mean_order_hour_of_day)) * 60),
+                                               sep = ":")) %>% #convert number to week days, and decimal to minute
   spread(key = order_dow, value = mean_order_hour_of_day) %>%
   knitr::kable(digits = 1)
 ```
