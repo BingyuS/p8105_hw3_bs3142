@@ -56,7 +56,9 @@ brfss_data %>%
   summarize(n_loc = n_distinct(locationdesc)) %>% #get total number of locations observed per state
   filter(n_loc == 7) #get states observed at 7 locations
 ```
+
 Comment:
+
 **CT, FL, NC** were observed at 7 locations in 2002.
 
 **2. Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.**
@@ -78,7 +80,9 @@ brfss_data %>%
     discrete = TRUE
   ) #make spagetti plot
 ```
+
 Comment:
+
 The majority of the states had similar number of locations each year. However, there was one state that had spikes in the number of locations in 2007 and 2010.
 
 **3. Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.**
@@ -94,7 +98,9 @@ brfss_data %>%
   ) %>% #get mean and sd
   knitr::kable(digits = 1) #show mean and sd in table
 ```
+
 Comment:
+
 In NY state, the means and standard deviations of the proportion of "Excellent" responses across locations in years 2002, 2006, and 2010 were similar (roughly around 22).
 
 **4. For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.**
@@ -117,8 +123,10 @@ brfss_data %>%
     discrete = TRUE
   ) #plot scatterplot showing mean proportion by response
 ```
+
 Comment:
-The clustering of average proportion of responses in each category suggested a similar proportion of responses are gathered each year. In general, people reported a majority of good responses.
+
+The clustering of average proportion of responses in each category across years suggested a similar proportion of responses are gathered each year. In general, people reported a majority of good responses.
 
 ## Problem 2
 
@@ -130,7 +138,7 @@ data(instacart) #load instacart data
 
 #### Section 2: Data exploration
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
-```{r}
+```{r, q2_data_exploring}
 names(instacart) #look at variables
 head(instacart) #look at first 6 rows
 
@@ -166,7 +174,7 @@ instacart %>%
 
 **1. How many aisles are there, and which aisles are the most items ordered from?**
 
-```{r}
+```{r, distinct_aisles}
 instacart %>%
   summarize(
     n_aisle = n_distinct(aisle_id)) #get number of aisles
@@ -176,16 +184,26 @@ instacart %>%
   arrange(desc(n)) #Check the aisle with the the most items ordered from
 ```
 
-There are **134** aisles, the aisle of **Fresh Vegetables** gets the most items ordered.
+Comment:
+
+There are **134** aisles, the most items are ordered from the aisles of **Fresh Vegetables** and **Fresh Fruits**, suggesting a high demand for vegatables and fruits.
 
 **2. Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.**
 
-```{r}
-instacart %>%
-  group_by(aisle) %>%
-  count(aisle) %>%
-  ggplot(aes(x = aisle, y = n, color = n)) + 
+```{r, scatterplot, fig.height = 6, dpi = 300}
+plot_instacart = 
+  instacart %>%
+  mutate(aisle = as.factor(aisle)) %>%
+  group_by(department, aisle) %>%
+  summarize(n_items = n()) #get number of items ordered in each aisle
+
+plot_instacart$aisle = factor(plot_instacart$aisle, levels = plot_instacart$aisle[order(plot_instacart$n_items)]) #order aisles by the number of items ordered
+  
+plot_instacart %>% 
+  ggplot(aes(x = aisle, y = n_items, color = department)) + 
     geom_point() +
+    theme(axis.text.x = element_text(face = "plain", color = "black", 
+                           size = 3, angle = 90)) +
     labs(
       title = "Number of items ordered in each aisle",
       x = "Aisle",
@@ -193,15 +211,19 @@ instacart %>%
       caption = "Data from instacart"
   ) +
   viridis::scale_color_viridis(
-    name = "Number of items ordered per aisle"
-  )
+    name = "Department",
+    discrete = TRUE
+  ) #plot scatterplot
   
 ```
-?????????
+
+Comment:
+
+The aisles are arranged according to number of items ordered. From the scatterplot, vegetables and fruits are ordered a lot more than other products.
 
 **3. Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.**
 
-```{r}
+```{r, table1_q2}
 instacart %>%
   filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
   group_by(aisle) %>%
@@ -210,9 +232,13 @@ instacart %>%
   knitr::kable(digits = 1)
 ```
 
+Comment:
+
+The most popular item in baking ingredients is **light brown sugar**, in dog food care is **snack sticks chicken & rice recipe dog treats**, in packaged vegetables fruits is **organic baby spinach**.
+
 **4. Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).**
 
-```{r}
+```{r, table2_q2}
 instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
   select(product_name, order_hour_of_day, order_dow) %>% 
@@ -223,10 +249,13 @@ instacart %>%
          mean_order_hour_of_day = paste(floor(mean_order_hour_of_day),
                                         round((mean_order_hour_of_day - floor(mean_order_hour_of_day)) * 60),
                                                sep = ":")) %>% #convert number to week days, and decimal to minute
-  spread(key = order_dow, value = mean_order_hour_of_day) %>%
-  knitr::kable(digits = 1)
+  spread(key = order_dow, value = mean_order_hour_of_day) %>% #get wide format
+  knitr::kable(digits = 1) #get table
 ```
 
+Comment:
+
+Coffee ice creams are ordered around afternoon everyday, and pink lady apples are ordered around noon everyday.
 
 ## Problem 3
 
