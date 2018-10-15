@@ -231,8 +231,16 @@ data(ny_noaa)
 The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. 
 
 ```{r}
-
+names(ny_noaa) #look at variables
+head(ny_noaa) #look at first 6 rows
+skimr::skim(ny_noaa) #get data summary
 ```
+
+**Summary**
+
+* The dataset contains **7** variables with **2595176** rows.
+* Precipitation, snowfull, snow depth, maximum and minimun temperatures are recorded by a total of **747** participating weather stations from 1981 to 2010. 
+* All five measurements contain a large portion of missing values.
 
 #### Section 3: Q & A
 
