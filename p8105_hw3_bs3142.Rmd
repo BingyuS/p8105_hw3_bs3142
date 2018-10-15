@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(patchwork)
 
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
@@ -286,7 +287,7 @@ tidy_noaa %>%
 
 **3. Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
-```{r}
+```{r, fig.height = 12, dpi = 300}
 plot_tmax_tmin = 
   tidy_noaa %>%
   filter(!is.na(tmax) & !is.na(tmin)) %>%
@@ -294,8 +295,8 @@ plot_tmax_tmin =
   geom_hex() +
     labs(
       title = "tmax vs. tmin",
-      x = "tmin",
-      y = "tmax",
+      x = "tmin (ºC)",
+      y = "tmax (ºC)",
       caption = "Data from ny_noaa"
   ) +
   viridis::scale_color_viridis(
@@ -307,12 +308,15 @@ plot_snow =
   tidy_noaa %>%
   filter(snow > 0 & snow < 100) %>%
   ggplot(aes(x = year, y = snow)) + 
-  geom_hex() +
+  geom_violin() +
+  stat_summary(fun.y = median, geom = "point", color = "blue", size = 2)
     labs(
       title = "The Distribution of Snowfall Values between 0mm and 100mm by Year",
-      x = "year",
-      y = "snowfall (mm)",
+      x = "Year",
+      y = "Snowfall (mm)",
       caption = "Data from ny_noaa"
-  ) 
+  ) #plot violin showing distribution
+
+plot_tmax_tmin / plot_snow
 ```
 
